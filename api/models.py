@@ -48,9 +48,3 @@ class Payment(models.Model):
     def __str__(self):
       return "$"+str(self.amount)
 
-    def getTotalPaid():
-        return Payment.objects.aggregate(models.Sum('amount'))
-         
-    def getTotalPayments():
-        return Payment.objects.all().count
-
