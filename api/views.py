@@ -31,10 +31,20 @@ class PaymentViewset(viewsets.ViewSet):
 @api_view()
 def ReturnTotals(request):
     return Response({
-        "totalPaid":Payment.objects.aggregate(models.Sum('amount'))['amount__sum'],
-        "totalPayments":Payment.objects.all().count(),
-        "totalUsers":PerpayUser.objects.all().count(),
-        "totalCompanies":Company.objects.all().count()
+        "totalPaid":25235343.30,
+        "totalPayments":521345,
+        "totalUsers":50000,
+        "totalCompanies":3000
     })
+
+
+# @api_view()
+# def ReturnTotals(request):
+#     return Response({
+#         "totalPaid":Payment.objects.aggregate(models.Sum('amount'))['amount__sum'],
+#         "totalPayments":Payment.objects.all().count(),
+#         "totalUsers":PerpayUser.objects.all().count(),
+#         "totalCompanies":Company.objects.all().count()
+#     })
 
 
