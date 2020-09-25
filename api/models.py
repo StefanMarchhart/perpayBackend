@@ -35,7 +35,7 @@ class Company(models.Model):
 
 
 class PerpayUser(AbstractUser):
-    Company= models.ForeignKey(Company, on_delete=models.CASCADE, null=True)
+    company= models.ForeignKey(Company, on_delete=models.CASCADE, null=True)
 
 
 
@@ -46,5 +46,5 @@ class Payment(models.Model):
     date = models.DateField(verbose_name="Date of Payment")
     user = models.ForeignKey(PerpayUser, on_delete=models.CASCADE)
     def __str__(self):
-      return "$"+str(self.amount)
+      return self.user.username+"- $"+str(self.amount)
 
