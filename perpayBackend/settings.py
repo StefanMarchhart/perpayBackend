@@ -48,7 +48,6 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'backend.apps.BackendConfig',  
     
     # Third party apps
     'corsheaders',
@@ -72,14 +71,7 @@ MIDDLEWARE = [
     'django.middleware.common.CommonMiddleware',
 ]
 
-CORS_ORIGIN_ALLOW_ALL = True # If this is used then `CORS_ORIGIN_WHITELIST` will not have any effect
-# CORS_ALLOW_CREDENTIALS = False
-# CORS_ORIGIN_WHITELIST = [
-#     'http://localhost:3030',
-# ] # If this is used, then not need to use `CORS_ORIGIN_ALLOW_ALL = True`
-# CORS_ORIGIN_REGEX_WHITELIST = [
-#     'http://localhost:3030',
-# ]
+CORS_ORIGIN_ALLOW_ALL = True 
 
 
 ROOT_URLCONF = 'perpayBackend.urls'

@@ -6,32 +6,6 @@ from django.db.models.signals import post_save
 from django.dispatch import receiver
 from rest_framework.authtoken.models import Token
 
-# from django.db import models
-# from pygments.lexers import get_all_lexers
-# from pygments.styles import get_all_styles
-
-# LEXERS = [item for item in get_all_lexers() if item[1]]
-# LANGUAGE_CHOICES = sorted([(item[1][0], item[0]) for item in LEXERS])
-# STYLE_CHOICES = sorted([(item, item) for item in get_all_styles()])
-
-
-# class Snippet(models.Model):
-#     created = models.DateTimeField(auto_now_add=True)
-#     title = models.CharField(max_length=100, blank=True, default='')
-#     code = models.TextField()
-#     linenos = models.BooleanField(default=False)
-#     language = models.CharField(choices=LANGUAGE_CHOICES, default='python', max_length=100)
-#     style = models.CharField(choices=STYLE_CHOICES, default='friendly', max_length=100)
-
-#     class Meta:
-#         ordering = ['created']
-
-# # Create your models here.
-
-
-
-
-
 
 class Company(models.Model):
     name = models.CharField(max_length=100, verbose_name="Company Name")
@@ -56,7 +30,6 @@ class PerpayUserManager(BaseUserManager):
         user= self.model(
             email=self.normalize_email(email)
         )
-        # user.email =self.normalize_email(email)
         user.username = username
         user.company = Company.objects.get(id=company)or company
         user.set_password(password)
@@ -78,24 +51,8 @@ class PerpayUserManager(BaseUserManager):
         user.save(using=self._db)
         return user
 
-# use_in_migrations = True
-
-# def create_user(self, email, name, date_of_birth, password=None):
-#     user = self.model(
-#         email=self.normalize_email(email),
-#         date_of_birth=date_of_birth,
-#         name=name,
-#     )
-#     user.set_password(password)
-#     user.save(using=self._db)
-#     return user
-
-
 class PerpayUser(AbstractUser):
     objects = PerpayUserManager()
-    # username=models.CharField(max_length=100, verbose_name="Username")
-    # email= models.EmailField(verbose_name='Email Address', unique=True)
-    # user = models.OneToOneField(User)
     company= models.ForeignKey(Company, on_delete=models.CASCADE, null=True)
 
     REQUIRED_FIELDS = ['email','company' ]

@@ -18,11 +18,7 @@ from rest_framework.authtoken.models import Token
 
 
 class SignupView(APIView):
-    # permission_classes = (IsAuthenticated,)             # <-- And here
-    # authentication_classes = (TokenAuthentication, SessionAuthentication)
-
     def post(self, request):
-
 
         print(request.data)
         serializer = PerpayUserSerializer(data=request.data)
@@ -35,43 +31,8 @@ class SignupView(APIView):
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-# @csrf_exempt
-# def signup(request):
-#     # if request.method == 'GET':
-#     #     Response({"Needs to be a POST Request"}, status=status.HTTP_405_METHOD_NOT_ALLOWED)
-#     if request.method == 'POST':
-#         # form = UserCreationForm(request.POST)
-
-#         # data = JSONParser().parse(request)
-
-#         serializer = UserSerializer(data=request.data)
-#         if serializer.is_valid():
-#             serializer.save()
-#             return Response(serializer.data, status=status.HTTP_201_CREATED)
-#         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-#     else:
-#         return Response({"Needs to be a POST Request"}, status=status.HTTP_405_METHOD_NOT_ALLOWED)
-
-
-        
-    #     if form.is_valid():
-    #         form.save()
-    #         username = form.cleaned_data.get('username')
-    #         raw_password = form.cleaned_data.get('password1')
-    #         user = authenticate(username=username, password=raw_password)
-    #         login(request, user)
-    #         return redirect('home')
-    # else:
-    #     form = UserCreationForm()
-    # return render(request, 'signup.html', {'form': form})
-
-
-# class UserViewSet(viewsets.ModelViewSet):
-#     queryset = PerpayUser.objects.all()
-    # serializer_class = PerpayUserSerializer
-
 def validateRangeValue(value):
-    # basic validation of get request
+    # basic validation of get params
     if not value:
         return None
     
@@ -82,11 +43,13 @@ def validateRangeValue(value):
 
 
 
-def FetchCompaniesInRange(start=0,end=20):
+def FetchCompaniesInRange(start=0,end=None):
+    # fetch all companies in the provided range
     return Company.objects.all().order_by("name")[start:end]
 
 
 def FetchDataForCompany(company):
+    # fetch all the data needed for a single breakdown table row
     paymentQS = Payment.objects.filter(user__company=company)
     usersQS = PerpayUser.objects.filter(company=company)
 
@@ -104,7 +67,9 @@ def FetchDataForCompany(company):
 
 
 class TotalsView(APIView):
-    permission_classes = (IsAuthenticated,)             # <-- And here
+    # returns the Total number and sum of payments, number of users, and number of companies
+
+    permission_classes = (IsAuthenticated,)
     authentication_classes = (TokenAuthentication, SessionAuthentication)
 
     def get(self, request):
@@ -117,7 +82,8 @@ class TotalsView(APIView):
         return Response(content)
 
 class TestTotalsView(APIView):
-    permission_classes = (IsAuthenticated,)             # <-- And here
+    # Same functionality as Totals View, with spoofed data for the sake of UI design
+    permission_classes = (IsAuthenticated,)
     authentication_classes = (TokenAuthentication, SessionAuthentication)
 
     def get(self, request):
@@ -131,12 +97,14 @@ class TestTotalsView(APIView):
 
 
 class BreakdownView(APIView):
-    permission_classes = (IsAuthenticated,)             # <-- And here
+    # returns an array of company breakdowns based off of the provided range
+    permission_classes = (IsAuthenticated,)
     authentication_classes = (TokenAuthentication, SessionAuthentication)
 
     def get(self, request):
 
         start = validateRangeValue(request.query_params.get("start")) or 0
+        # end = validateRangeValue(request.query_params.get("end")) or 10
         end = validateRangeValue(request.query_params.get("end")) or 10
         output=[]
         for company in FetchCompaniesInRange(start,end):
@@ -152,12 +120,14 @@ class BreakdownView(APIView):
 
 
 class TestBreakdownView(APIView):
-    permission_classes = (IsAuthenticated,)             # <-- And here
+    # Same functionality as Breakdown View, with spoofed data for the sake of UI design
+
+    permission_classes = (IsAuthenticated,)
     authentication_classes = (TokenAuthentication, SessionAuthentication)
 
     def get(self, request):
         output=[]
-        for companyno in range(1,11):
+        for companyno in range(1,51):
             output.append({
                 "company":"Company "+str(companyno),
                 "paid":50000,
@@ -176,6 +146,3 @@ class CompaniesView(APIView):
         return Response(output)
 
 
-
-# user = User.objects.create_user('john', 'lennon@thebeatles.com', 'johnpassword')
-# user.last_name = 'Lennon

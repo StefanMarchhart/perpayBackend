@@ -9,7 +9,6 @@ class PerpayUserSerializer(serializers.ModelSerializer):
     class Meta:
         model = PerpayUser
         fields = ('email', 'username', 'password', 'company')
-        # extra_kwargs = {'password': {'write_only': True}}
     
     def validate_email(self, value):
         # Checks to see if the email is in a "Valid" form, and isn't already in use
@@ -38,8 +37,7 @@ class PerpayUserSerializer(serializers.ModelSerializer):
     def validate_company(self, value):
         # just checking if the company we're claiming to be a part of exists, 
         # regular users wouldn't create new companys anyways
-        # print("Company Name" + value) 
-        # if not Company.objects.filter(id=value).exists():
+
         if not value:
             raise serializers.ValidationError("Company does not exist")
         return value
@@ -47,22 +45,14 @@ class PerpayUserSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         print("validated data")
-        # company =  Company.objects.get(id=validated_data.pop('company'))
         company = validated_data.pop('company')
         password = validated_data.pop('password')
         username = validated_data.pop('username')
         email = validated_data.pop('email')
-        # print(**validated_data)
-        # user = PerpayUserManager.creat
+
         
         print(password)
         print("vaidated")
         user=get_user_model()
         user = PerpayUser.objects.create_user(username=username,email=email,password=password,company=company.id)
         return user
-        # user = PerpayUser.objects.create_user(username=username,password=password)
-        # user = PerpayUserManager.create_user(username=username,email=email,password=password,company=company)
-        # user = PerpayUserManager.create_user(username=username,email=email,password=password,company=company)
-        
-        # PerpayUserManager.create_user(validated_data.pop('username'),)
-    
