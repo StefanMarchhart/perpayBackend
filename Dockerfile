@@ -1,13 +1,16 @@
 # pull official base image
 FROM python:3.8-alpine
-VOLUME /tmp
-RUN apk add --no-cache curl bash openssh python3
-ADD /heroku-exec.sh /app/.profile.d/heroku-exec.sh
-RUN chmod a+x /app/.profile.d/heroku-exec.sh
 
-ADD /sh-wrapper.sh /bin/sh-wrapper.sh
-RUN chmod a+x /bin/sh-wrapper.sh
-RUN rm /bin/sh && ln -s /bin/sh-wrapper.sh /bin/sh
+# Used to generate bulk data on heroku
+
+# VOLUME /tmp
+# RUN apk add --no-cache curl bash openssh python3
+# ADD /heroku-exec.sh /app/.profile.d/heroku-exec.sh
+# RUN chmod a+x /app/.profile.d/heroku-exec.sh
+
+# ADD /sh-wrapper.sh /bin/sh-wrapper.sh
+# RUN chmod a+x /bin/sh-wrapper.sh
+# RUN rm /bin/sh && ln -s /bin/sh-wrapper.sh /bin/sh
 
 # set work directory
 WORKDIR /app
@@ -42,9 +45,6 @@ RUN python manage.py setup
 RUN adduser -D myuser
 USER myuser
 
-
-# COPY ${HEROKU_FILE_NAME} /etc/profile.d/heroku-exec.sh
-# RUN rm /bin/sh && ln -s /bin/bash /bin/sh
 
 # run gunicorn
 CMD gunicorn perpayBackend.wsgi:application --bind 0.0.0.0:$PORT
