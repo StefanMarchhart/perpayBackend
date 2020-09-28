@@ -1,6 +1,6 @@
 from django.db import models
 import datetime
-from django.contrib.auth.models import AbstractUser
+from django.contrib.auth.models import AbstractUser, User,BaseUserManager
 from django.conf import settings
 from django.db.models.signals import post_save
 from django.dispatch import receiver
@@ -39,8 +39,67 @@ class Company(models.Model):
       return self.name
 
 
+class PerpayUserManager(BaseUserManager):
+    def create_user(self,username,email,password=None,**extra_fields):
+        print("Creating a new User")
+        company=extra_fields.get("company")
+        print(username,email,company,password)
+        if not email:
+            raise ValueError("User must have an email")
+        if not password:
+            raise ValueError("User must have a password")
+        if not username:
+            raise ValueError("User must have a Username")
+        if not company:
+            raise ValueError("User must have a company")
+        
+        user= self.model(
+            email=self.normalize_email(email)
+        )
+        # user.email =self.normalize_email(email)
+        user.username = username
+        user.company = Company.objects.get(id=company)or company
+        user.set_password(password)
+        user.save(using=self._db)
+        return user
+
+    def create_superuser(self,email,username,company,password=None):
+        """
+        Creates and saves a superuser with the given email, date of
+        birth and password.
+        """
+        user = self.create_user(
+            email,
+            username,
+            company,
+            password,
+        )
+        user.is_admin = True
+        user.save(using=self._db)
+        return user
+
+# use_in_migrations = True
+
+# def create_user(self, email, name, date_of_birth, password=None):
+#     user = self.model(
+#         email=self.normalize_email(email),
+#         date_of_birth=date_of_birth,
+#         name=name,
+#     )
+#     user.set_password(password)
+#     user.save(using=self._db)
+#     return user
+
+
 class PerpayUser(AbstractUser):
+    objects = PerpayUserManager()
+    # username=models.CharField(max_length=100, verbose_name="Username")
+    # email= models.EmailField(verbose_name='Email Address', unique=True)
+    # user = models.OneToOneField(User)
     company= models.ForeignKey(Company, on_delete=models.CASCADE, null=True)
+
+    REQUIRED_FIELDS = ['email','company' ]
+
 
 @receiver(post_save, sender=settings.AUTH_USER_MODEL)
 def create_auth_token(sender, instance=None, created=False, **kwargs):
