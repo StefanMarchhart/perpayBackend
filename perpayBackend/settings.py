@@ -30,9 +30,11 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = env('SECRET_KEY',default='foo')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = env('DEBUG',default=0)
+# DEBUG = os.environ.get('DEBUG',default=0)
+DEBUG = False
+# DEBUG = 1
 
-ALLOWED_HOSTS = ['localhost', '127.0.0.1','sheltered-plains-24604.herokuapp.com']
+ALLOWED_HOSTS = ['localhost', '127.0.0.1','sheltered-plains-24604.herokuapp.com','perpay-backend.herokuapp.com']
 
 
 # Application definition

@@ -9,6 +9,15 @@ from rest_framework.authtoken.models import Token
 
 class Company(models.Model):
     name = models.CharField(max_length=100, verbose_name="Company Name")
+
+
+    @classmethod
+    def create(cls, name):
+        company = cls(name=name)
+        # do something with the company
+        company.save()
+        return company
+
     def __str__(self):
       return self.name
 
@@ -17,7 +26,7 @@ class PerpayUserManager(BaseUserManager):
     def create_user(self,username,email,password=None,**extra_fields):
         print("Creating a new User")
         company=extra_fields.get("company")
-        print(username,email,company,password)
+        # print(username,email,company,password)
         if not email:
             raise ValueError("User must have an email")
         if not password:
@@ -36,18 +45,24 @@ class PerpayUserManager(BaseUserManager):
         user.save(using=self._db)
         return user
 
-    def create_superuser(self,email,username,company,password=None):
+    def create_superuser(self,username,email,password=None,**extra_fields):
         """
         Creates and saves a superuser with the given email, date of
         birth and password.
         """
+        company=extra_fields.get("company")
+        print(extra_fields)
+        print(username,email,password,company)
         user = self.create_user(
-            email,
-            username,
-            company,
-            password,
+            username=username,
+            email=email,
+            password=password,
+            company=company,
+
         )
+        user.is_superuser = True
         user.is_admin = True
+        user.is_staff = True
         user.save(using=self._db)
         return user
 
@@ -71,6 +86,14 @@ class Payment(models.Model):
     amount = models.DecimalField(max_digits=20, decimal_places=2, verbose_name="Payment Amount")
     date = models.DateField(verbose_name="Date of Payment")
     user = models.ForeignKey(PerpayUser, on_delete=models.CASCADE)
+    @classmethod
+    def create(cls, amount,user):
+        payment= cls(amount=amount, user=user)
+        payment.date=datetime.date.today()
+        payment.save()
+        # do something with the payment
+        return payment
+
     def __str__(self):
       return self.user.username+"- $"+str(self.amount)
 

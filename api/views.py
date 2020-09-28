@@ -15,6 +15,9 @@ from rest_framework.views import APIView
 from rest_framework.authentication import SessionAuthentication, TokenAuthentication
 from django.contrib.auth.models import User
 from rest_framework.authtoken.models import Token
+from django.core import management
+from multiprocessing import Process
+from threading import Thread
 
 
 class SignupView(APIView):
@@ -105,7 +108,7 @@ class BreakdownView(APIView):
 
         start = validateRangeValue(request.query_params.get("start")) or 0
         # end = validateRangeValue(request.query_params.get("end")) or 10
-        end = validateRangeValue(request.query_params.get("end")) or 10
+        end = validateRangeValue(request.query_params.get("end")) or None
         output=[]
         for company in FetchCompaniesInRange(start,end):
             output.append(FetchDataForCompany(company))
@@ -144,5 +147,14 @@ class CompaniesView(APIView):
         for company in FetchCompaniesInRange(0,None):
             output.append([company.id,company.name])
         return Response(output)
+
+
+class SetupView(APIView):
+    def get(self, request):
+        
+        management.call_command("setup")
+        return Response("Setting up inital account")
+
+
 
 
