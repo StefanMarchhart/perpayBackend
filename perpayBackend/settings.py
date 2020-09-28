@@ -14,10 +14,10 @@ from pathlib import Path
 
 import os
 import environ
-
+import dj_database_url
 
 env = environ.Env()
-env.read_env(env.str('ENV_PATH', '.env'))
+env.read_env(env.str('ENV_PATH', default='.env'))
 
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -27,12 +27,12 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/3.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'vnxbe_9h8w2pwu1et7ds)z59&i+!7z3%-nto6$13960)rv2@sl'
+SECRET_KEY = env('SECRET_KEY',default='foo')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = env('DEBUG')
+DEBUG = env('DEBUG',default=0)
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['localhost', '127.0.0.1','sheltered-plains-24604.herokuapp.com']
 
 
 # Application definition
@@ -62,6 +62,7 @@ INSTALLED_APPS = [
 MIDDLEWARE = [
     'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -72,6 +73,10 @@ MIDDLEWARE = [
 ]
 
 CORS_ORIGIN_ALLOW_ALL = True 
+
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+
 
 
 ROOT_URLCONF = 'perpayBackend.urls'
@@ -98,16 +103,28 @@ WSGI_APPLICATION = 'perpayBackend.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/3.1/ref/settings/#databases
 
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.postgresql',
+#         'NAME': env('DB_NAME',default='db_name'),
+#         'USER': env('DB_USER',default='db_user'),
+#         'PASSWORD': env('DB_PASSWORD',default='db_password'),
+#         'HOST': env('DB_HOST',default='db_host'),
+#         'PORT': env('DB_PORT',default='db_port'),
+#     }
+# }
+
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'perpay',
-        'USER': 'stefan',
-        'PASSWORD': env('db_password'),
-        'HOST': 'localhost',
-        'PORT': '',
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
     }
 }
+
+DATABASE_URL = os.environ.get('DATABASE_URL')
+db_from_env = dj_database_url.config(default=DATABASE_URL, conn_max_age=500, ssl_require=True)
+DATABASES['default'].update(db_from_env)
+
 
 
 # Password validation
